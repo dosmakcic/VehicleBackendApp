@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project.Service.Service
+namespace Project.Service.Services
 {
     public class VehicleService : IVehicleService
     {
@@ -18,28 +18,39 @@ namespace Project.Service.Service
             _context = context;
         }
 
-        public async Task<IEnumerable<VehicleMake>> GetAllMakesAsync(string sortOrder, string searchString, int? pageNumber, int pageSize)
+
+
+        public async Task<PaginatedList<VehicleMake>> GetAllMakesAsync(string sortOrder, string searchString, int? pageNumber, int pageSize)
         {
-            var makes = from m in _context.VehicleMakes
-                        select m;
+            var query = _context.VehicleMakes.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                makes = makes.Where(m => m.Name.Contains(searchString) || m.Abrv.Contains(searchString));
+                query = query.Where(m => m.Name.Contains(searchString) || m.Abrv.Contains(searchString));
             }
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    makes = makes.OrderByDescending(m => m.Name);
+                    query = query.OrderByDescending(m => m.Name);
+                    break;
+                case "abrv":
+                    query = query.OrderBy(m => m.Abrv);
+                    break;
+                case "abrv_desc":
+                    query = query.OrderByDescending(m => m.Abrv);
                     break;
                 default:
-                    makes = makes.OrderBy(m => m.Name);
+                    query = query.OrderBy(m => m.Name);
                     break;
             }
 
-            return await PaginatedList<VehicleMake>.CreateAsync(makes.AsNoTracking(), pageNumber ?? 1, pageSize);
+            return await PaginatedList<VehicleMake>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize);
         }
+
+
+
+
 
         public async Task<VehicleMake> GetMakeByIdAsync(int id)
         {
@@ -68,28 +79,33 @@ namespace Project.Service.Service
             }
         }
 
-       
-        public async Task<IEnumerable<VehicleModel>> GetAllModelsAsync(string sortOrder, string searchString, int? pageNumber, int pageSize)
+
+        public async Task<PaginatedList<VehicleModel>> GetAllModelsAsync(string sortOrder, string searchString, int? pageNumber, int pageSize)
         {
-            var models = from m in _context.VehicleModels.Include(m => m.VehicleMake)
-                         select m;
+            var query = _context.VehicleModels.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                models = models.Where(m => m.Name.Contains(searchString) || m.Abrv.Contains(searchString));
+                query = query.Where(m => m.Name.Contains(searchString) || m.Abrv.Contains(searchString));
             }
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    models = models.OrderByDescending(m => m.Name);
+                    query = query.OrderByDescending(m => m.Name);
+                    break;
+                case "abrv":
+                    query = query.OrderBy(m => m.Abrv);
+                    break;
+                case "abrv_desc":
+                    query = query.OrderByDescending(m => m.Abrv);
                     break;
                 default:
-                    models = models.OrderBy(m => m.Name);
+                    query = query.OrderBy(m => m.Name);
                     break;
             }
 
-            return await PaginatedList<VehicleModel>.CreateAsync(models.AsNoTracking(), pageNumber ?? 1, pageSize);
+            return await PaginatedList<VehicleModel>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize);
         }
 
         public async Task<VehicleModel> GetModelByIdAsync(int id)
