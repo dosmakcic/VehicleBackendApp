@@ -38,6 +38,26 @@ namespace Project.Service.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VehicleMakes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Abrv = "BMW",
+                            Name = "BMW"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Abrv = "Ford",
+                            Name = "Ford"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Abrv = "VW",
+                            Name = "Volkswagen"
+                        });
                 });
 
             modelBuilder.Entity("Project.Service.Models.VehicleModel", b =>
@@ -57,21 +77,69 @@ namespace Project.Service.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VehicleMakeId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("VehicleMakeId");
+                    b.HasIndex("MakeId");
 
                     b.ToTable("VehicleModels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Abrv = "128",
+                            MakeId = 1,
+                            Name = "128"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Abrv = "325",
+                            MakeId = 1,
+                            Name = "325"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Abrv = "X5",
+                            MakeId = 1,
+                            Name = "X5"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Abrv = "MST",
+                            MakeId = 2,
+                            Name = "Mustang"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Abrv = "EXP",
+                            MakeId = 2,
+                            Name = "Explorer"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Abrv = "GLF",
+                            MakeId = 3,
+                            Name = "Golf"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Abrv = "PLO",
+                            MakeId = 3,
+                            Name = "Polo"
+                        });
                 });
 
             modelBuilder.Entity("Project.Service.Models.VehicleModel", b =>
                 {
                     b.HasOne("Project.Service.Models.VehicleMake", "VehicleMake")
                         .WithMany("VehicleModels")
-                        .HasForeignKey("VehicleMakeId")
+                        .HasForeignKey("MakeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -4,6 +4,7 @@ using Project.Service.Services;
 using Project.MVC.Models;
 using System.Dynamic;
 using Project.Service.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Project.MVC.Controllers
 {
@@ -27,16 +28,7 @@ namespace Project.MVC.Controllers
         }
 
         
-        public async Task<IActionResult> Details(int id)
-        {
-            var make = await _vehicleService.GetMakeByIdAsync(id);
-            if (make == null)
-            {
-                return NotFound();
-            }
-            var makeViewModel = _mapper.Map<VehicleMakeViewModel>(make);
-            return View(makeViewModel);
-        }
+       
 
         
         public IActionResult Create()
@@ -47,7 +39,7 @@ namespace Project.MVC.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Abrv")] VehicleMakeViewModel makeViewModel)
+        public async Task<IActionResult> Create([Bind("Name,Abrv")] VehicleMakeViewModel makeViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -70,7 +62,7 @@ namespace Project.MVC.Controllers
             return View(makeViewModel);
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Abrv")] VehicleMakeViewModel makeViewModel)
@@ -82,29 +74,43 @@ namespace Project.MVC.Controllers
 
             if (ModelState.IsValid)
             {
-                var make = _mapper.Map<VehicleMake>(makeViewModel);
-                await _vehicleService.UpdateMakeAsync(make);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    
+                    var existingMake = await _vehicleService.GetMakeByIdAsync(id);
+
+                    if (existingMake == null)
+                    {
+                        return NotFound(); 
+                    }
+
+                    _mapper.Map(makeViewModel, existingMake);
+
+                    await _vehicleService.UpdateMakeAsync(existingMake);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit was modified by another user after you got the original value. The edit operation was canceled. If you still want to edit this record, please reload the page and try again.");
+
+                    var make = await _vehicleService.GetMakeByIdAsync(id);
+                    var updatedMakeViewModel = _mapper.Map<VehicleMakeViewModel>(make);
+
+                    return View(updatedMakeViewModel);
+                }
             }
+
             return View(makeViewModel);
         }
 
-        
-        public async Task<IActionResult> Delete(int id)
-        {
-            var make = await _vehicleService.GetMakeByIdAsync(id);
-            if (make == null)
-            {
-                return NotFound();
-            }
-            var makeViewModel = _mapper.Map<VehicleMakeViewModel>(make);
-            return View(makeViewModel);
-        }
 
 
-        [HttpPost, ActionName("Delete")]
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             await _vehicleService.DeleteMakeAsync(id);
             return RedirectToAction(nameof(Index));

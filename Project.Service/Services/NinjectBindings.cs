@@ -11,7 +11,7 @@ namespace Project.Service.Services
     {
         public override void Load()
         {
-            Bind<IVehicleService>().To<VehicleService>();
+            Bind<IVehicleService>().To<VehicleService>().InTransientScope();
         }
     }
 }

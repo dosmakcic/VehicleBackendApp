@@ -20,6 +20,15 @@ namespace Project.Service.Services
 
 
 
+
+        public async Task<List<VehicleMake>> TestGetMakes()
+        {
+            var makes = await _context.VehicleMakes.ToListAsync();
+
+            return makes;
+        }
+
+
         public async Task<PaginatedList<VehicleMake>> GetAllMakesAsync(string sortOrder, string searchString, int? pageNumber, int pageSize)
         {
             var query = _context.VehicleMakes.AsQueryable();
@@ -52,7 +61,7 @@ namespace Project.Service.Services
 
 
 
-        public async Task<VehicleMake> GetMakeByIdAsync(int id)
+        public async Task<VehicleMake?> GetMakeByIdAsync(int id)
         {
             return await _context.VehicleMakes.FindAsync(id);
         }
@@ -65,9 +74,32 @@ namespace Project.Service.Services
 
         public async Task UpdateMakeAsync(VehicleMake make)
         {
-            _context.Entry(make).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            // Pronađi postojeći entitet u bazi podataka
+            var existingMake = await _context.VehicleMakes.FindAsync(make.Id);
+
+            if (existingMake == null)
+            {
+                throw new InvalidOperationException("Entity not found.");
+            }
+
+            // Ažuriraj samo one atribute koji su se promijenili
+            existingMake.Name = make.Name;
+            existingMake.Abrv = make.Abrv;
+
+            // Označi entitet kao izmijenjen
+            _context.Entry(existingMake).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // Ovdje možete obraditi iznimku ako je potrebno
+                throw new InvalidOperationException("Concurrency issue detected.", ex);
+            }
         }
+
 
         public async Task DeleteMakeAsync(int id)
         {

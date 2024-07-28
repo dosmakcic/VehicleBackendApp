@@ -11,6 +11,6 @@ namespace Project.Service.Models
         public int Id { get; set; }
         public string? Name { get; set; }
         public string? Abrv { get; set; }
-        public ICollection<VehicleModel> VehicleModels { get; set; } = new List<VehicleModel>();
+        public ICollection<VehicleModel> VehicleModels { get; set; } = null!;
     }
 }

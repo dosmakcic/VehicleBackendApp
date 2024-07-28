@@ -1,43 +1,26 @@
-using Project.Service.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Project.Service.Data;
-using System;
+using Project.Service.Services;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Ninject;
-using Project.Service;
-
-
+using Project.MVC;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<VehicleContext>(options =>
-    options.UseSqlServer(connectionString));
-
-
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddTransient<IVehicleService, VehicleService>();
-
-
-var kernel = new StandardKernel();
-kernel.Load(new NinjectBindings());
-
-
-
-
-
+// Registruj sve servise i konfiguracije
+ConfigureServices(builder.Services);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
+// TestDatabaseConnection(app.Services); 
+
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -53,3 +36,57 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// Metod za konfiguraciju servisa u ASP.NET Core DI
+void ConfigureServices(IServiceCollection services)
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new InvalidOperationException("No connection string found for 'DefaultConnection'.");
+    }
+
+    // Dodaj MVC servise
+    services.AddControllersWithViews();
+
+    // Dodaj AutoMapper
+    services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+    // Dodaj DbContext
+    services.AddDbContext<VehicleContext>(options =>
+        options.UseSqlServer(connectionString)
+               .EnableSensitiveDataLogging());
+
+    // Dodaj vaše servise
+    services.AddTransient<IVehicleService, VehicleService>();
+}
+
+/*
+void TestDatabaseConnection(IServiceProvider services)
+{
+    using (var scope = services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<VehicleContext>();
+
+        try
+        {
+            var vehicleMakes = context.VehicleMakes.ToList();
+
+            Console.WriteLine("Database connection successful!");
+            Console.WriteLine("Retrieved Vehicle Makes:");
+            foreach (var make in vehicleMakes)
+            {
+                Console.WriteLine($"- {make.Name} ({make.Abrv})");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Database connection failed:");
+            Console.WriteLine(ex.Message);
+        }
+    }
+ 
+    
+}
+*/

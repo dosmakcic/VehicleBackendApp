@@ -13,6 +13,8 @@ namespace Project.Service.Services
     public interface IVehicleService
     {
         Task<PaginatedList<VehicleMake>> GetAllMakesAsync(string sortOrder, string searchString, int? pageNumber, int pageSize);
+
+        Task<List<VehicleMake>> TestGetMakes();
         Task<VehicleMake> GetMakeByIdAsync(int id);
         Task InsertMakeAsync(VehicleMake make);
         Task UpdateMakeAsync(VehicleMake make);
