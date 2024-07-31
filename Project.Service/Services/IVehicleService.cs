@@ -20,7 +20,9 @@ namespace Project.Service.Services
         Task UpdateMakeAsync(VehicleMake make);
         Task DeleteMakeAsync(int id);
 
-        Task<PaginatedList<VehicleModel>> GetAllModelsAsync(string sortOrder, string searchString, int? pageNumber, int pageSize);
+        Task<List<VehicleModel>> GetModelsByMakeIdAsync(int? makeId);
+
+        Task<PaginatedList<VehicleModel>> GetAllModelsAsync(int? selectedMakeId, string sortOrder, string searchString, int? pageNumber, int pageSize);
         Task<VehicleModel> GetModelByIdAsync(int id);
         Task InsertModelAsync(VehicleModel model);
         Task UpdateModelAsync(VehicleModel model);

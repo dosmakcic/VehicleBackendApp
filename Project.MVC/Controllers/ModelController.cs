@@ -3,6 +3,7 @@ using Project.Service.Services;
 using AutoMapper;
 using Project.MVC.Models;
 using Project.Service.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Project.MVC.Controllers
 {
@@ -19,24 +20,58 @@ namespace Project.MVC.Controllers
         }
 
       
-        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumber)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumber, int? selectedMakeId)
         {
-            var models = await _vehicleService.GetAllModelsAsync(sortOrder, searchString, pageNumber, 10);
-            var modelViewModels = models.Select(m => _mapper.Map<VehicleModelViewModel>(m)).ToList();
-            return View(new PaginatedList<VehicleModelViewModel>(modelViewModels, models.Count, models.PageIndex, models.TotalPages));
+
+            var pageSize = 10;
+            var paginatedModels = await _vehicleService.GetAllModelsAsync(
+                selectedMakeId,
+                sortOrder,
+                searchString,
+                pageNumber,
+                pageSize
+            );
+
+           
+            var uniqueMakeIds = paginatedModels
+                .Select(m => m.MakeId)
+                .Distinct()
+                .ToList();
+
+           
+            var allMakes = await _vehicleService.GetAllMakesAsync("name", null, null, int.MaxValue);
+            var makes = allMakes
+                       .Select(m => new SelectListItem
+                       {
+                           Value = m.Id.ToString(),
+                           Text = m.Name,
+                           Selected = m.Id == selectedMakeId 
+                       }).ToList();
+
+            ViewData["SelectedMakeId"] = selectedMakeId;
+            ViewData["Makes"] = makes;
+
+
+
+
+            var modelViewModels = paginatedModels
+                .Select(m => _mapper.Map<VehicleModelViewModel>(m))
+                .ToList();
+
+           
+
+            return View(new PaginatedList<VehicleModelViewModel>(
+                modelViewModels,
+                paginatedModels.Count,
+                paginatedModels.PageIndex,
+                paginatedModels.TotalPages
+            ));
+
+
         }
 
        
-        public async Task<IActionResult> Details(int id)
-        {
-            var model = await _vehicleService.GetModelByIdAsync(id);
-            if (model == null)
-            {
-                return NotFound();
-            }
-            var modelViewModel = _mapper.Map<VehicleModelViewModel>(model);
-            return View(modelViewModel);
-        }
+       
 
         
         public IActionResult Create()

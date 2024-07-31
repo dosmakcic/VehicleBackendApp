@@ -12,11 +12,14 @@
     <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
 
+
+
 <form asp-controller="Make" asp-action="Index" method="get" class="form-inline">
     <div class="form-group">
         <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search by Name or Abbreviation" />
         <input type="submit" value="Search" class="btn btn-primary" />
     </div>
+
 </form>
 
 
@@ -41,7 +44,6 @@
                 <td>@Html.DisplayFor(modelItem => item.Abrv)</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
                     <form asp-action="Delete" method="post" style="display:inline;">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@item.Id" />

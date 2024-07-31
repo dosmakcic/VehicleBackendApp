@@ -58,7 +58,19 @@ namespace Project.Service.Services
         }
 
 
-
+        public async Task<List<VehicleModel>> GetModelsByMakeIdAsync(int? makeId)
+        {
+            if (makeId.HasValue)
+            {
+                return await _context.VehicleModels
+                                     .Where(vm => vm.MakeId == makeId)
+                                     .ToListAsync();
+            }
+            else
+            {
+                return await _context.VehicleModels.ToListAsync();
+            }
+        }
 
 
         public async Task<VehicleMake?> GetMakeByIdAsync(int id)
@@ -112,13 +124,19 @@ namespace Project.Service.Services
         }
 
 
-        public async Task<PaginatedList<VehicleModel>> GetAllModelsAsync(string sortOrder, string searchString, int? pageNumber, int pageSize)
+        public async Task<PaginatedList<VehicleModel>> GetAllModelsAsync(int? selectedMakeId, string sortOrder, string searchString, int? pageNumber, int pageSize)
         {
             var query = _context.VehicleModels.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 query = query.Where(m => m.Name.Contains(searchString) || m.Abrv.Contains(searchString));
+            }
+
+
+            if (selectedMakeId.HasValue)
+            {
+                query = query.Where(m => m.MakeId == selectedMakeId.Value);
             }
 
             switch (sortOrder)
@@ -137,8 +155,9 @@ namespace Project.Service.Services
                     break;
             }
 
-            return await PaginatedList<VehicleModel>.CreateAsync(query.AsNoTracking(), pageNumber ?? 1, pageSize);
+            return await PaginatedList<VehicleModel>.CreateAsync(query, pageNumber ?? 1, pageSize);
         }
+
 
         public async Task<VehicleModel> GetModelByIdAsync(int id)
         {

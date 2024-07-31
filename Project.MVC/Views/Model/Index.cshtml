@@ -1,8 +1,10 @@
-﻿@using Project.Service.Services
-@model PaginatedList<Project.MVC.Models.VehicleModelViewModel>
+﻿@model PaginatedList<Project.MVC.Models.VehicleModelViewModel>
+@using Project.Service.Services
 
 @{
     ViewData["Title"] = "Vehicle Models";
+    var selectedMakeId = ViewData["SelectedMakeId"] as int?;
+    var makes = ViewData["Makes"] as List<SelectListItem>;
 }
 
 <h1>Vehicle Models</h1>
@@ -14,9 +16,24 @@
 <form asp-controller="Model" asp-action="Index" method="get" class="form-inline">
     <div class="form-group">
         <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Search by Name or Abbreviation" />
+         <select name="selectedMakeId" class="form-control" onchange="this.form.submit()">
+            <option value="">All Makes</option>
+            @if (makes != null)
+            {
+                @foreach (var make in makes)
+                {
+                    <option value="@make.Value" >
+                        @make.Text
+                    </option>
+                }
+            }
+        </select>
+
+
         <input type="submit" value="Search" class="btn btn-primary" />
     </div>
 </form>
+
 
 <table class="table">
     <thead>
@@ -28,9 +45,8 @@
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["AbrvSortParam"]">Abbreviation</a>
             </th>
             <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["MakeSortParam"]">Make</a>
+               <a asp-action="Index" asp-route-sortOrder="@ViewData["MakeIdSortParam"]">MakeId</a>
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -39,16 +55,20 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Name)</td>
                 <td>@Html.DisplayFor(modelItem => item.Abrv)</td>
-                <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                <td>@Html.DisplayFor(modelItem => item.MakeId)</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                    <form asp-action="Delete" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="submit" value="Delete" class="btn btn-danger" />
+                    </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
 
 <div class="row">
     <div class="col-md-6">

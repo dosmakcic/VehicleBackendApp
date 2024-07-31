@@ -9,13 +9,24 @@ namespace Project.MVC
         public MappingProfile()
         {
             CreateMap<VehicleMakeViewModel, VehicleMake>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore()); // Ignoriraj Id jer se generira u bazi
+                .ForMember(dest => dest.Id, opt => opt.Ignore()); 
 
-        // Mapiranje iz modela u ViewModel
-        CreateMap<VehicleMake, VehicleMakeViewModel>()
-            .ForMember(dest => dest.MakeId, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.MakeName, opt => opt.MapFrom(src => src.Name));
-    
+        
+            CreateMap<VehicleMake, VehicleMakeViewModel>()
+                .ForMember(dest => dest.MakeId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.MakeName, opt => opt.MapFrom(src => src.Name));
+
+
+            CreateMap<VehicleModelViewModel, VehicleModel>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            CreateMap<VehicleModel, VehicleModelViewModel>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+
+
+
         }
         
 

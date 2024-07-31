@@ -23,15 +23,19 @@ namespace Project.Service.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
+            modelBuilder.Entity<VehicleMake>()
+                         .HasMany(v => v.VehicleModels)
+                         .WithOne(vm => vm.VehicleMake)
+                         .HasForeignKey(vm => vm.MakeId)
+                         .OnDelete(DeleteBehavior.Cascade);
 
-        
 
-           
+
+
             modelBuilder.Entity<VehicleModel>()
-                .HasOne(v => v.VehicleMake)
-                .WithMany(m => m.VehicleModels)
-                .HasForeignKey(v => v.MakeId);
+                        .HasOne(v => v.VehicleMake)
+                        .WithMany(m => m.VehicleModels)
+                        .HasForeignKey(v => v.MakeId);
 
 
             modelBuilder.Entity<VehicleMake>()
