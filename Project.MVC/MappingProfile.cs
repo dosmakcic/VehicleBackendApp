@@ -18,11 +18,16 @@ namespace Project.MVC
 
 
             CreateMap<VehicleModelViewModel, VehicleModel>()
-                .ForMember(dest => dest.Id, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.MakeId, opt => opt.MapFrom(src => src.MakeId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Abrv, opt => opt.MapFrom(src => src.Abrv));
 
             CreateMap<VehicleModel, VehicleModelViewModel>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+                .ForMember(dest => dest.MakeId, opt => opt.MapFrom(src => src.MakeId))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Abrv, opt => opt.MapFrom(src => src.Abrv));
 
 
 

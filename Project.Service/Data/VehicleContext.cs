@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.Service.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project.Service.Data
 {
@@ -47,8 +41,7 @@ namespace Project.Service.Data
 
             modelBuilder.Entity<VehicleModel>()
                         .HasData(
-            new VehicleModel { Id = 1, MakeId = 1, Name = "128", Abrv = "128" },
-            new VehicleModel { Id = 2, MakeId = 1, Name = "325", Abrv = "325" },
+            new VehicleModel { Id = 1, MakeId = 1, Name = "BMW X3", Abrv = "X3" },
             new VehicleModel { Id = 3, MakeId = 1, Name = "X5", Abrv = "X5" },
             new VehicleModel { Id = 4, MakeId = 2, Name = "Mustang", Abrv = "MST" },
             new VehicleModel { Id = 5, MakeId = 2, Name = "Explorer", Abrv = "EXP" },

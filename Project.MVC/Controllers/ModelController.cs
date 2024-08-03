@@ -4,6 +4,7 @@ using AutoMapper;
 using Project.MVC.Models;
 using Project.Service.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Project.MVC.Controllers
 {
@@ -79,13 +80,22 @@ namespace Project.MVC.Controllers
             return View();
         }
 
+
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,MakeId,Name,Abrv")] VehicleModelViewModel modelViewModel)
+        public async Task<IActionResult> Create([Bind("MakeId,Name,Abrv")] VehicleModelViewModel modelViewModel)
         {
             if (ModelState.IsValid)
             {
+               
+                var makeExists = await _vehicleService.GetMakeByIdAsync(modelViewModel.MakeId);
+                if (makeExists == null)
+                {
+                    ModelState.AddModelError("MakeId", "Selected Make does not exist.");
+                    return View(modelViewModel);
+                }
+
                 var model = _mapper.Map<VehicleModel>(modelViewModel);
                 await _vehicleService.InsertModelAsync(model);
                 return RedirectToAction(nameof(Index));
@@ -93,7 +103,8 @@ namespace Project.MVC.Controllers
             return View(modelViewModel);
         }
 
-        
+
+
         public async Task<IActionResult> Edit(int id)
         {
             var model = await _vehicleService.GetModelByIdAsync(id);
@@ -105,7 +116,7 @@ namespace Project.MVC.Controllers
             return View(modelViewModel);
         }
 
-        
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,MakeId,Name,Abrv")] VehicleModelViewModel modelViewModel)
@@ -117,14 +128,41 @@ namespace Project.MVC.Controllers
 
             if (ModelState.IsValid)
             {
-                var model = _mapper.Map<VehicleModel>(modelViewModel);
-                await _vehicleService.UpdateModelAsync(model);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    var existingModel = await _vehicleService.GetModelByIdAsync(id);
+                    if (existingModel == null)
+                    {
+                        return NotFound();
+                    }
+
+                   
+                    var makeExists = await _vehicleService.GetMakeByIdAsync(modelViewModel.MakeId);
+                    if (makeExists == null)
+                    {
+                        ModelState.AddModelError("MakeId", "Selected Make does not exist.");
+                        return View(modelViewModel);
+                    }
+
+                    _mapper.Map(modelViewModel, existingModel);
+                    await _vehicleService.UpdateModelAsync(existingModel);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    ModelState.AddModelError(string.Empty, "The record you attempted to edit was modified by another user after you got the original value. The edit operation was canceled. If you still want to edit this record, please reload the page and try again.");
+
+                    var model = await _vehicleService.GetModelByIdAsync(id);
+                    var updatedModelViewModel = _mapper.Map<VehicleModelViewModel>(model);
+                    return View(updatedModelViewModel);
+                }
             }
             return View(modelViewModel);
         }
 
-        
+
+
         public async Task<IActionResult> Delete(int id)
         {
             var model = await _vehicleService.GetModelByIdAsync(id);
