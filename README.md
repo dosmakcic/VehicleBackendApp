@@ -76,7 +76,7 @@ The Vehicle Backend App is a web application built using ASP.NET Core MVC that a
 ### Features
 
 - **View Vehicle Makes and Models**
-  - This is view of Make and Model with pagination,filtering and sorting with CRUD possibilities.
+  - This is view of Make and Model with pagination,filtering and sorting with CRUD possibilities. <br />
     ***Vehicle makes***
     ![image](https://github.com/user-attachments/assets/d1182f25-9cab-4e74-a713-516d1194bdba)
 
@@ -89,7 +89,7 @@ The Vehicle Backend App is a web application built using ASP.NET Core MVC that a
 
 
 - **Create a New Vehicle Make/Model**
-  - Click on the "Create" button to add new vehicle makes or models.
+  - Click on the "Create" button to add new vehicle makes or models. <br />
     ***Vehicle makes***
    ![image](https://github.com/user-attachments/assets/008037fa-3673-4ad2-bf50-0e8be0ba065e)
 
@@ -100,7 +100,7 @@ The Vehicle Backend App is a web application built using ASP.NET Core MVC that a
 
 
 - **Edit Existing Vehicle Make/Model**
-  - Select the "Edit" button next to the vehicle make/model you wish to modify.
+  - Select the "Edit" button next to the vehicle make/model you wish to modify. <br />
     ***Vehicle makes***
     ![image](https://github.com/user-attachments/assets/47821d7e-75c5-4ee6-b897-afb93892432f)
 
