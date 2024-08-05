@@ -34,7 +34,7 @@ namespace Project.Service.Data
 
             modelBuilder.Entity<VehicleMake>()
                         .HasData(
-          new VehicleMake { Id = 1, Name = "BMW", Abrv = "BMW" },
+          new VehicleMake { Id = 1, Name = "Bayerische Motoren Werke", Abrv = "BMW" },
           new VehicleMake { Id = 2, Name = "Ford", Abrv = "Ford" },
           new VehicleMake { Id = 3, Name = "Volkswagen", Abrv = "VW" }
                                  );

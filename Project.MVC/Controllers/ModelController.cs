@@ -49,6 +49,13 @@ namespace Project.MVC.Controllers
                            Selected = m.Id == selectedMakeId 
                        }).ToList();
 
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
+            ViewData["AbrvSortParam"] = sortOrder == "abrv_asc" ? "abrv_desc" : "abrv_asc";
+            ViewData["MakeIdSortParam"] = sortOrder == "makeId_asc" ? "makeId_desc" : "makeId_asc";
+
+
+
             ViewData["SelectedMakeId"] = selectedMakeId;
             ViewData["Makes"] = makes;
 

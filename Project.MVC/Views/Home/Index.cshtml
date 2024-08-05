@@ -6,5 +6,16 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+   
+
+    <div class="mt-4">
+        <h2>Manage Vehicles</h2>
+        <p class="lead">
+            Use the links below to manage vehicle makes and models.
+        </p>
+        <div>
+            <a asp-controller="Make" asp-action="Index" class="btn btn-primary m-2">View Vehicle Makes</a>
+            <a asp-controller="Model" asp-action="Index" class="btn btn-secondary m-2">View Vehicle Models</a>
+        </div>
+    </div>
 </div>

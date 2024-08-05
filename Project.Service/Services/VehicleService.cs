@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Project.Service.Models;
 using Project.Service.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Project.Service.Models;
 
 namespace Project.Service.Services
 {
@@ -43,11 +38,14 @@ namespace Project.Service.Services
                 case "name_desc":
                     query = query.OrderByDescending(m => m.Name);
                     break;
-                case "abrv":
-                    query = query.OrderBy(m => m.Abrv);
+                case "name_asc":
+                    query = query.OrderBy(m => m.Name);
                     break;
                 case "abrv_desc":
                     query = query.OrderByDescending(m => m.Abrv);
+                    break;
+                case "abrv_asc":
+                    query = query.OrderBy(m => m.Abrv);
                     break;
                 default:
                     query = query.OrderBy(m => m.Name);
@@ -86,7 +84,7 @@ namespace Project.Service.Services
 
         public async Task UpdateMakeAsync(VehicleMake make)
         {
-            // Pronađi postojeći entitet u bazi podataka
+
             var existingMake = await _context.VehicleMakes.FindAsync(make.Id);
 
             if (existingMake == null)
@@ -94,11 +92,10 @@ namespace Project.Service.Services
                 throw new InvalidOperationException("Entity not found.");
             }
 
-            // Ažuriraj samo one atribute koji su se promijenili
             existingMake.Name = make.Name;
             existingMake.Abrv = make.Abrv;
 
-            // Označi entitet kao izmijenjen
+            
             _context.Entry(existingMake).State = EntityState.Modified;
 
             try
@@ -107,7 +104,7 @@ namespace Project.Service.Services
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                // Ovdje možete obraditi iznimku ako je potrebno
+                
                 throw new InvalidOperationException("Concurrency issue detected.", ex);
             }
         }
@@ -144,11 +141,20 @@ namespace Project.Service.Services
                 case "name_desc":
                     query = query.OrderByDescending(m => m.Name);
                     break;
-                case "abrv":
-                    query = query.OrderBy(m => m.Abrv);
+                case "name_asc":
+                    query = query.OrderBy(m => m.Name);
                     break;
                 case "abrv_desc":
                     query = query.OrderByDescending(m => m.Abrv);
+                    break;
+                case "abrv_asc":
+                    query = query.OrderBy(m => m.Abrv);
+                    break;
+                case "makeId_desc":
+                    query = query.OrderByDescending(m => m.Id);  
+                    break;
+                case "makeId_asc":
+                    query = query.OrderBy(m => m.Id);
                     break;
                 default:
                     query = query.OrderBy(m => m.Name);
