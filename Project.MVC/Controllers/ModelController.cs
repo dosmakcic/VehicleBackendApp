@@ -5,6 +5,7 @@ using Project.MVC.Models;
 using Project.Service.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Project.MVC.GetParameters;
 
 namespace Project.MVC.Controllers
 {
@@ -21,16 +22,16 @@ namespace Project.MVC.Controllers
         }
 
       
-        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumber, int? selectedMakeId)
+        public async Task<IActionResult> Index(ModelGetParameters modelGetParameters)
         {
 
-            var pageSize = 10;
+            
             var paginatedModels = await _vehicleService.GetAllModelsAsync(
-                selectedMakeId,
-                sortOrder,
-                searchString,
-                pageNumber,
-                pageSize
+                modelGetParameters.SelectedMakeId,
+                modelGetParameters.SortOrder,
+                modelGetParameters.SearchString,
+                modelGetParameters.PageNumber,
+                modelGetParameters.PageSize
             );
 
            
@@ -46,17 +47,17 @@ namespace Project.MVC.Controllers
                        {
                            Value = m.Id.ToString(),
                            Text = m.Name,
-                           Selected = m.Id == selectedMakeId 
+                           Selected = m.Id == modelGetParameters.SelectedMakeId
                        }).ToList();
 
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
-            ViewData["AbrvSortParam"] = sortOrder == "abrv_asc" ? "abrv_desc" : "abrv_asc";
-            ViewData["MakeIdSortParam"] = sortOrder == "makeId_asc" ? "makeId_desc" : "makeId_asc";
+            ViewData["CurrentSort"] = modelGetParameters.SortOrder;
+            ViewData["NameSortParam"] = modelGetParameters.SortOrder == "name_asc" ? "name_desc" : "name_asc";
+            ViewData["AbrvSortParam"] = modelGetParameters.SortOrder == "abrv_asc" ? "abrv_desc" : "abrv_asc";
+            ViewData["MakeIdSortParam"] = modelGetParameters.SortOrder == "makeId_asc" ? "makeId_desc" : "makeId_asc";
 
 
 
-            ViewData["SelectedMakeId"] = selectedMakeId;
+            ViewData["SelectedMakeId"] = modelGetParameters.SelectedMakeId;
             ViewData["Makes"] = makes;
 
 

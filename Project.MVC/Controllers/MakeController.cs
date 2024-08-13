@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project.MVC.Models;
+using Project.MVC.GetParameters;
 using Project.Service.Models;
 using Project.Service.Services;
 
@@ -19,13 +20,16 @@ namespace Project.MVC.Controllers
         }
 
        
-        public async Task<IActionResult> Index(string sortOrder, string searchString, int? pageNumber)
+        public async Task<IActionResult> Index(MakeGetParameters makeGetParameters)
         {
-            ViewData["CurrentSort"] = sortOrder;
-            ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
-            ViewData["AbrvSortParam"] = sortOrder == "abrv_asc" ? "abrv_desc" : "abrv_asc";
+            ViewData["CurrentSort"] = makeGetParameters.SortOrder;
+            ViewData["NameSortParam"] = makeGetParameters.SortOrder == "name_asc" ? "name_desc" : "name_asc";
+            ViewData["AbrvSortParam"] = makeGetParameters.SortOrder == "abrv_asc" ? "abrv_desc" : "abrv_asc";
 
-            var makes = await _vehicleService.GetAllMakesAsync(sortOrder, searchString, pageNumber, 10);
+            var makes = await _vehicleService.GetAllMakesAsync(makeGetParameters.SortOrder,
+                makeGetParameters.SearchString,
+                makeGetParameters.PageNumber, makeGetParameters.PageSize);
+
             var makeViewModels = makes.Select(m => _mapper.Map<VehicleMakeViewModel>(m)).ToList();
             return View(new PaginatedList<VehicleMakeViewModel>(makeViewModels, makes.Count, makes.PageIndex, makes.TotalPages));
         }
