@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Ninject.Modules;
 using Project.MVC;
 using Project.Service.Data;
+using Project.Service.Models;
+using Project.Service.Services.Filtering;
+using Project.Service.Services.Pagination;
+using Project.Service.Services.Sorting;
 
 
 namespace Project.Service.Services
@@ -27,10 +31,39 @@ namespace Project.Service.Services
                 return optionsBuilder.Options;
             });
 
-            
-            Bind<IVehicleService>().To<VehicleService>().InTransientScope();
 
-         
+
+            Bind<IMakeService>().To<MakeService>().InTransientScope();
+            Bind<IModelService>().To<ModelService>().InTransientScope();
+
+
+
+            Bind<ISortingStrategy<VehicleMake>>()
+            .To<VehicleMakeSorting>()
+            .InSingletonScope();
+
+            Bind<IFilteringStrategy<VehicleMake>>()
+                .To<VehicleMakeFilteringStrategy>()
+                .InSingletonScope();
+
+            Bind<IPaginationStrategy<VehicleMake>>()
+                .To<PaginationStrategy<VehicleMake>>()
+                .InSingletonScope();
+
+            Bind<ISortingStrategy<VehicleModel>>()
+                .To<VehicleModelSorting>()
+                .InSingletonScope();
+
+            Bind<IFilteringStrategy<VehicleModel>>()
+                .To<VehicleModelFilteringStrategy>()
+                .InSingletonScope();
+
+            Bind<IPaginationStrategy<VehicleModel>>()
+                .To<PaginationStrategy<VehicleModel>>()
+                .InSingletonScope();
+
+
+
             Bind<IMapper>().ToMethod(ctx =>
             {
                 var config = new MapperConfiguration(cfg =>

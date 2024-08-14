@@ -5,19 +5,21 @@ using Project.MVC.Models;
 using Project.Service.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Project.MVC.GetParameters;
+using Project.Service.GetParameters;
 
 namespace Project.MVC.Controllers
 {
     public class ModelController : Controller
     {
-        private readonly IVehicleService _vehicleService;
+        private readonly IModelService _vehicleService;
+        private readonly IMakeService _makeService;
         private readonly IMapper _mapper;
 
 
-        public ModelController(IVehicleService vehicleService, IMapper mapper)
+        public ModelController(IModelService vehicleService,IMakeService makeService, IMapper mapper)
         {
             _vehicleService = vehicleService;
+            _makeService = makeService;
             _mapper = mapper;
         }
 
@@ -25,14 +27,9 @@ namespace Project.MVC.Controllers
         public async Task<IActionResult> Index(ModelGetParameters modelGetParameters)
         {
 
+
             
-            var paginatedModels = await _vehicleService.GetAllModelsAsync(
-                modelGetParameters.SelectedMakeId,
-                modelGetParameters.SortOrder,
-                modelGetParameters.SearchString,
-                modelGetParameters.PageNumber,
-                modelGetParameters.PageSize
-            );
+            var paginatedModels = await _vehicleService.GetAllModelsAsync(modelGetParameters);
 
            
             var uniqueMakeIds = paginatedModels
@@ -40,8 +37,8 @@ namespace Project.MVC.Controllers
                 .Distinct()
                 .ToList();
 
-           
-            var allMakes = await _vehicleService.GetAllMakesAsync("name", null, null, int.MaxValue);
+
+            var allMakes = await _makeService.TestGetMakes();
             var makes = allMakes
                        .Select(m => new SelectListItem
                        {
@@ -97,7 +94,7 @@ namespace Project.MVC.Controllers
             if (ModelState.IsValid)
             {
                
-                var makeExists = await _vehicleService.GetMakeByIdAsync(modelViewModel.MakeId);
+                var makeExists = await _makeService.GetMakeByIdAsync(modelViewModel.MakeId);
                 if (makeExists == null)
                 {
                     ModelState.AddModelError("MakeId", "Selected Make does not exist.");
@@ -145,7 +142,7 @@ namespace Project.MVC.Controllers
                     }
 
                    
-                    var makeExists = await _vehicleService.GetMakeByIdAsync(modelViewModel.MakeId);
+                    var makeExists = await _makeService.GetMakeByIdAsync(modelViewModel.MakeId);
                     if (makeExists == null)
                     {
                         ModelState.AddModelError("MakeId", "Selected Make does not exist.");

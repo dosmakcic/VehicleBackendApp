@@ -7,9 +7,9 @@ namespace Project.MVC.Controllers
     public class HomeController : Controller
     {
 
-        private readonly IVehicleService _vehicleService;
+        private readonly IModelService _vehicleService;
 
-        public HomeController(IVehicleService vehicleService)
+        public HomeController(IModelService vehicleService)
         {
             _vehicleService = vehicleService;
         }
